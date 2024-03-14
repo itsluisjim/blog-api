@@ -1,16 +1,14 @@
 const express = require("express");
+const authorRoute = require('./routes/author');
 
 const app = express();
 
 require('./config/connection');
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res, next) => {
-  const msg = {
-    message: "hello world!",
-  };
+app.use('/author', authorRoute);
 
-  return res.json(msg);
-});
 
 app.listen(3000);
