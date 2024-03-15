@@ -1,7 +1,5 @@
 const asyncHandler = require("express-async-handler");
 const User = require('../models/user');
-const { response } = require("express");
-const user = require("../models/user");
 
 require('../config/connection');
 
@@ -32,7 +30,7 @@ exports.update_user = asyncHandler(async (req, res, next) => {
     if(userInfo == null){
         const err = new Error("User not found");
         err.status = 404;
-        return response.json(err);
+        return res.json(err);
     }
 
     const user = new User({
