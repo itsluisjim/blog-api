@@ -1,11 +1,12 @@
 const asyncHandler = require("express-async-handler");
 const User = require('../models/user');
+const { response } = require("express");
+const user = require("../models/user");
 
 require('../config/connection');
 
 exports.list_all_authors = asyncHandler(async (req, res, next) => {
     const list_of_authors = await User.find().sort({last: 1}).exec();
-
     return res.json(list_of_authors);
 })
 
@@ -25,11 +26,43 @@ exports.create_user = asyncHandler(async (req, res, next) => {
 });
 
 exports.update_user = asyncHandler(async (req, res, next) => {
-    res.json("Implementation of UPDATE_USER")
+
+    const userInfo = await User.findById(req.params.id).exec();
+
+    if(userInfo == null){
+        const err = new Error("User not found");
+        err.status = 404;
+        return response.json(err);
+    }
+
+    const user = new User({
+        _id: req.params.id,
+        username: req.body.username,
+        first: req.body.first,
+        last: req.body.last,
+        email: req.body.email,
+        hash: userInfo.hash,
+        salt: userInfo.salt,
+        admin: userInfo.admin
+    });
+
+    await User.findByIdAndUpdate(req.params.id, user, {});
+
+    return res.json({msg: "User Updated!", user: user})
 });
 exports.delete_user = asyncHandler(async (req, res, next) => {
-    res.json("Implementation of DELETE_USER")
+
+    const user = await User.findById(req.params.id).exec();
+
+    if (user === null) {
+        return res.json('User not found!')
+    } else {
+        await User.findByIdAndDelete(req.body.userId);
+        res.json("User was deleted successfully!")
+    }
 });
 exports.get_user_detail = asyncHandler(async (req, res, next) => {
-    res.json("Implementation of GET_USER_DETAIL")
+    const user = await User.findById(req.params.id).exec();
+
+    res.json(user);
 });
