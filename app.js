@@ -1,16 +1,18 @@
 const express = require("express");
+const authorRoute = require('./routes/author');
+const postRoute = require('./routes/post');
+const commentRoute = require('./routes/comment');
 
 const app = express();
 
 require('./config/connection');
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-app.get("/", (req, res, next) => {
-  const msg = {
-    message: "hello world!",
-  };
+app.use('/authors', authorRoute);
+app.use('/posts', postRoute);
+app.use('/comments', commentRoute);
 
-  return res.json(msg);
-});
 
 app.listen(3000);
