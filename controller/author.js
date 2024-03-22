@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
+const generatePassword = require("../lib/passwordUtils").generatePassword;
 
 require("../config/connection");
 
@@ -39,12 +40,12 @@ exports.create_user = [
       .escape()
       .isEmail(),
 
-    body("hash")
+    body("password")
     .trim()
     .isLength({ min: 8 })
     .escape()
     .matches(/^(?=.*[A-Z])/)
-    .withMessage("Username must have an uppercase letter.")
+    .withMessage("Password must have an uppercase letter.")
     .matches(/^(?=.*[a-z])/)
     .withMessage("Password must have a lowercase letter.")
     .matches(/^(?=.*\d)/)
@@ -64,13 +65,18 @@ exports.create_user = [
         return res.status(400).json({ errors: errorMessages });
     }
 
+    const saltHash = generatePassword(req.body.password);
+
+    const salt = saltHash.salt;
+    const hash = saltHash.hash;
+
     const user = new User({
       username: req.body.username,
       first: req.body.first,
       last: req.body.last,
       email: req.body.email,
-      hash: req.body.hash,
-      salt: 'TEMP_PLACEHOLDER_FOR_SALT',
+      hash: hash,
+      salt: salt,
       admin: false,
     });
     await user.save();
