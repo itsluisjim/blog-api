@@ -60,7 +60,10 @@ exports.login_user = [
 
     return res.status(200).json({
         message: 'Authentication Successfull',
-        token
+        data: {
+          user,
+          token
+        }
     });
   }),
 ];
