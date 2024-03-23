@@ -6,6 +6,7 @@ const PostSchema = new Schema({
   createdAt: { type: Date, default: Date.now },
   title: { type: String, require: true },
   content: { type: String, required: true },
+  isPublished: { type: Boolean, required: true }
 });
 
 module.exports = mongoose.model("Post", PostSchema);

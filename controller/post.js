@@ -29,6 +29,11 @@ exports.create_post = [
     .notEmpty()
     .withMessage("Content must not be empty!"),
 
+  body("published")
+    .isBoolean()
+    .notEmpty()
+    .withMessage("Choose whether your blog is published or unpublished"),
+
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -44,6 +49,7 @@ exports.create_post = [
       createdAt: Date.now(),
       title: req.body.title,
       content: req.body.content,
+      isPublished: req.body.published,
     });
 
     await post.save();
@@ -98,6 +104,11 @@ exports.update_post = [
     .notEmpty()
     .withMessage("Content must not be empty!"),
 
+  body("published")
+    .isBoolean()
+    .notEmpty()
+    .withMessage("Choose whether your blog is published or unpublished"),
+
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
 
@@ -120,6 +131,7 @@ exports.update_post = [
       title: req.body.title,
       content: req.body.content,
       createdAt: Date.now(),
+      isPublished: req.body.published
     });
 
     await Post.findByIdAndUpdate(req.params.id, updatedPost, {});
