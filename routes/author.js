@@ -4,8 +4,6 @@ const router = express.Router();
 const author_controller = require('../controller/author');
 
 router.get('/', author_controller.list_all_authors);
-router.post('/create', author_controller.create_user);
-
 router.put('/:id/update', author_controller.update_user);
 router.get('/:id', author_controller.get_user_detail)
 
