@@ -11,7 +11,7 @@ const opts = {
 
 
 module.exports = new JwtStrategry(opts, async (JwtPayload, done) => {
-    const userId = JwtPayload.user._id;
+    const userId = JwtPayload.newUser._id;
 
     const user = await User.findById(userId).exec();
 
