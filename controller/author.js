@@ -1,7 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
-const generatePassword = require("../lib/passwordUtils").generatePassword;
 
 require("../config/connection");
 
@@ -10,80 +9,6 @@ exports.list_all_authors = asyncHandler(async (req, res, next) => {
   return res.json(list_of_authors);
 });
 
-exports.create_user = [
-  body('username')
-    .trim()
-    .escape()
-    .isLength({min: 8})
-    .withMessage('Username must be longer than 8 characters')
-    .isAlphanumeric()
-    .withMessage("Username has non-alphanumeric characters."),
-
-    body('first')
-    .trim()
-    .isLength({min: 2})
-    .escape()
-    .withMessage("First name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
-
-  body('last')
-    .trim()
-    .isLength({min: 2})
-    .escape()
-    .withMessage("Last name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("Last name has non-alphanumeric characters."),
-
-    body('email')
-      .trim()
-      .escape()
-      .isEmail(),
-
-    body("password")
-    .trim()
-    .isLength({ min: 8 })
-    .escape()
-    .matches(/^(?=.*[A-Z])/)
-    .withMessage("Password must have an uppercase letter.")
-    .matches(/^(?=.*[a-z])/)
-    .withMessage("Password must have a lowercase letter.")
-    .matches(/^(?=.*\d)/)
-    .withMessage("Password must have at least one digit.")
-    .matches(/^(?=.*[!@#$%])/)
-    .withMessage(
-      "Password must have at least one of the following symbols (!,@,#,$,%)"
-    ),
-
-  asyncHandler(async (req, res, next) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        const errorMessages = errors.array().map(error => ({
-            message: error.msg
-        }));
-        return res.status(400).json({ errors: errorMessages });
-    }
-
-    const saltHash = generatePassword(req.body.password);
-
-    const salt = saltHash.salt;
-    const hash = saltHash.hash;
-
-    const user = new User({
-      username: req.body.username,
-      first: req.body.first,
-      last: req.body.last,
-      email: req.body.email,
-      hash: hash,
-      salt: salt,
-      admin: false,
-    });
-    await user.save();
-
-    return res.status(200).json({ msg: "user created!", user: user });
-  }),
-];
 
 exports.update_user = [
   body('username')
