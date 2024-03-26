@@ -5,7 +5,7 @@ const { body, validationResult } = require("express-validator");
 require("../config/connection");
 
 exports.list_all_authors = asyncHandler(async (req, res, next) => {
-  const list_of_authors = await User.find().sort({ last: 1 }).exec();
+  const list_of_authors = await User.find().sort({ last: 1 }).select("username first last email admin").exec();
   return res.json(list_of_authors);
 });
 exports.update_user = [
@@ -101,7 +101,7 @@ exports.delete_user = asyncHandler(async (req, res, next) => {
   return res.json({ message: "User was deleted successfully!" });
 });
 exports.get_user_detail = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.params.id).exec();
+  const user = await User.findById(req.params.id).select("username first last email admin").exec();
 
   if (user === null) {
     const err = new Error();

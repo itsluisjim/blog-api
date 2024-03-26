@@ -7,7 +7,10 @@ require("../config/connection");
 exports.get_all_posts = asyncHandler(async (req, res, next) => {
   const list_of_posts = await Post.find()
     .sort({ createdAt: -1 })
-    .populate("author")
+    .populate({
+      path: 'author',
+      select: '-hash -salt -admin -email -__v'
+    })
     .exec();
 
   return res.json(list_of_posts);
