@@ -86,7 +86,13 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
   
 });
 exports.get_post_details = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.id).populate("author").exec();
+  const post = await Post.findById(req.params.id)
+    .populate(
+      {
+        path: 'author',
+        select: '-hash -salt -admin -email -__v'
+      })
+    .exec();
 
   if (post === null) {
     const err = new Error();
