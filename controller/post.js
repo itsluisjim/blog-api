@@ -7,7 +7,10 @@ require("../config/connection");
 exports.get_all_posts = asyncHandler(async (req, res, next) => {
   const list_of_posts = await Post.find()
     .sort({ createdAt: -1 })
-    .populate("author")
+    .populate({
+      path: 'author',
+      select: '-hash -salt -admin -email -__v'
+    })
     .exec();
 
   return res.json(list_of_posts);
@@ -54,10 +57,9 @@ exports.create_post = [
 
     await post.save();
 
-    return res.json(post);
+    return res.json({message: "Post Created!", post: post});
   }),
 ];
-
 exports.delete_post = asyncHandler(async (req, res, next) => {
   if (req.body.postId == null || req.body.postId == "") {
     const err = new Error();
@@ -73,13 +75,24 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
     err.status = 404;
     err.message = "Post not found!";
     return res.json(err);
-  } else {
-    await Post.findByIdAndDelete(req.body.postId);
-    return res.json({ message: "Post was deleted successfully!" });
+  } 
+
+  if (post.author.toString() !== req.user._id.toString() && !req.user.admin) {
+    return res.status(403).json({ message: "You are not authorized to delete this post." });
   }
+   
+  await Post.findByIdAndDelete(req.body.postId);
+  return res.json({ message: "Post was deleted successfully!" });
+  
 });
 exports.get_post_details = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.id).populate("author").exec();
+  const post = await Post.findById(req.params.id)
+    .populate(
+      {
+        path: 'author',
+        select: '-hash -salt -admin -email -__v'
+      })
+    .exec();
 
   if (post === null) {
     const err = new Error();
@@ -125,6 +138,10 @@ exports.update_post = [
       return res.status(404).json("Post not found!");
     }
 
+    if (post.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You are not authorized to update this post." });
+    }
+
     const updatedPost = new Post({
       _id: req.params.id,
       author: post.author._id,
@@ -136,6 +153,6 @@ exports.update_post = [
 
     await Post.findByIdAndUpdate(req.params.id, updatedPost, {});
 
-    return res.json(updatedPost);
+    return res.json({ message: "Updated Post!", post: updatedPost });
   }),
 ];
