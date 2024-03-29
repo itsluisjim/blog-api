@@ -22,16 +22,16 @@ exports.update_user = [
     .isLength({ min: 2 })
     .escape()
     .withMessage("First name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .isAlpha()
+    .withMessage("First name must contain only alphabetical characters."),
 
   body("last")
     .trim()
     .isLength({ min: 2 })
     .escape()
     .withMessage("Last name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("Last name has non-alphanumeric characters."),
+    .isAlpha()
+    .withMessage("Last name must contain only alphabetical characters."),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
