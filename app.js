@@ -1,5 +1,6 @@
 const express = require("express");
 const passport = require("passport");
+const logger = require('morgan');
 const jwtStrategry  = require("./strategies/jwt");
 const cors = require('cors');
 
@@ -14,6 +15,7 @@ const corsOptions = {
 };
 
 app.use(cors());
+app.use(logger('dev'));
 
 app.use(passport.initialize());
 passport.use(jwtStrategry);
