@@ -23,8 +23,8 @@ exports.create_post = [
     .escape()
     .notEmpty()
     .withMessage("Content must not be empty!")
-    .isLength({ min: 5, max: 40 })
-    .withMessage("Title must be between 5-50 characters long."),
+    .isLength({ min: 5, max: 80 })
+    .withMessage("Title must be between 5-80 characters long."),
 
   body("content")
     .trim()
@@ -108,8 +108,8 @@ exports.update_post = [
     .escape()
     .notEmpty()
     .withMessage("Content must not be empty!")
-    .isLength({ min: 5, max: 40 })
-    .withMessage("Title must be between 5-50 characters long."),
+    .isLength({ min: 5, max: 80 })
+    .withMessage("Title must be between 5-80 characters long."),
 
   body("content")
     .trim()
