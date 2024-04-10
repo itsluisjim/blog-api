@@ -53,6 +53,7 @@ exports.create_post = [
       title: req.body.title,
       content: req.body.content,
       isPublished: req.body.published,
+      comments: []
     });
 
     await post.save();
@@ -92,6 +93,13 @@ exports.get_post_details = asyncHandler(async (req, res, next) => {
         path: 'author',
         select: '-hash -salt -admin -email -__v'
       })
+    .populate({
+      path: 'comments', 
+      populate: {
+        path: 'author',
+        select: '-hash -salt -admin -email -__v'
+      }  
+    })
     .exec();
 
   if (post === null) {
@@ -148,7 +156,8 @@ exports.update_post = [
       title: req.body.title,
       content: req.body.content,
       createdAt: Date.now(),
-      isPublished: req.body.published
+      isPublished: req.body.published,
+      comments: post.comments
     });
 
     await Post.findByIdAndUpdate(req.params.id, updatedPost, {});
