@@ -95,6 +95,7 @@ exports.get_post_details = asyncHandler(async (req, res, next) => {
       })
     .populate({
       path: 'comments', 
+      options: { sort: { createdAt: -1 } },
       populate: {
         path: 'author',
         select: '-hash -salt -admin -email -__v'
