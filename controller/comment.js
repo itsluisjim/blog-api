@@ -28,8 +28,8 @@ exports.create_comment = [
   body("comment")
     .trim()
     .escape()
-    .isLength({ min: 1 })
-    .withMessage("Comment must have at least one character"),
+    .isLength({ min: 1, max: 200})
+    .withMessage("Comment must be between 1 to 200 characters long."),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
