@@ -15,6 +15,14 @@ exports.get_all_posts = asyncHandler(async (req, res, next) => {
 
   return res.json(list_of_posts);
 });
+exports.get_all_posts_by_author = asyncHandler(async (req, res, next) => {
+
+  const list_of_posts_by_author = await Post.find({ author: req.params.id})
+    .sort({ createdAt: -1 })
+    .exec();
+
+  return res.json(list_of_posts_by_author);
+});
 exports.get_post_details = asyncHandler(async (req, res, next) => {
   const post = await Post.findById(req.params.id)
     .populate(

@@ -3,6 +3,7 @@ const router = express.Router();
 const post_controller = require('../controller/post');
 
 router.get('/', post_controller.get_all_posts);
+router.get('/:id/my-posts', post_controller.get_all_posts_by_author);
 router.post('/create', post_controller.create_post);
 router.put('/:id/update', post_controller.update_post);
 
