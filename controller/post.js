@@ -15,6 +15,31 @@ exports.get_all_posts = asyncHandler(async (req, res, next) => {
 
   return res.json(list_of_posts);
 });
+exports.get_post_details = asyncHandler(async (req, res, next) => {
+  const post = await Post.findById(req.params.id)
+    .populate(
+      {
+        path: 'author',
+        select: '-hash -salt -admin -email -__v'
+      })
+    .populate({
+      path: 'comments', 
+      options: { sort: { createdAt: -1 } },
+      populate: {
+        path: 'author',
+        select: '-hash -salt -admin -email -__v'
+      }  
+    })
+    .exec();
+
+  if (post === null) {
+    const err = new Error();
+    err.status = 404;
+    err.message = "Post not found!";
+    return res.json(err);
+  }
+  return res.json(post);
+});
 exports.create_post = [
   body("authorId").notEmpty(),
 
@@ -85,31 +110,6 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
   await Post.findByIdAndDelete(req.body.postId);
   return res.json({ message: "Post was deleted successfully!" });
   
-});
-exports.get_post_details = asyncHandler(async (req, res, next) => {
-  const post = await Post.findById(req.params.id)
-    .populate(
-      {
-        path: 'author',
-        select: '-hash -salt -admin -email -__v'
-      })
-    .populate({
-      path: 'comments', 
-      options: { sort: { createdAt: -1 } },
-      populate: {
-        path: 'author',
-        select: '-hash -salt -admin -email -__v'
-      }  
-    })
-    .exec();
-
-  if (post === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Post not found!";
-    return res.json(err);
-  }
-  return res.json(post);
 });
 exports.update_post = [
   body("title")
