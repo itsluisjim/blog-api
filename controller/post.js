@@ -1,5 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Post = require("../models/post");
+const Comment = require("../models/comment");
 const { body, validationResult } = require("express-validator");
 
 require("../config/connection");
@@ -114,8 +115,12 @@ exports.delete_post = asyncHandler(async (req, res, next) => {
   if (post.author.toString() !== req.user._id.toString() && !req.user.admin) {
     return res.status(403).json({ message: "You are not authorized to delete this post." });
   }
-   
-  await Post.findByIdAndDelete(req.body.postId);
+
+  Promise.all([
+    await Comment.deleteMany({post_id: req.body.postId}),
+    await Post.findByIdAndDelete(req.body.postId)
+  ]);
+
   return res.json({ message: "Post was deleted successfully!" });
   
 });
