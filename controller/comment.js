@@ -23,7 +23,8 @@ exports.get_comment_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.create_comment = [
-  body("authorId").notEmpty(),
+  body("authorId").trim().notEmpty(),
+  body("postId").trim().notEmpty(),
 
   body("comment")
     .trim()
