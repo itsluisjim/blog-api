@@ -1,11 +1,13 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/user");
+const Post = require("../models/post");
+const Comment = require("../models/comment");
 const { body, validationResult } = require("express-validator");
 
 require("../config/connection");
 
 exports.list_all_authors = asyncHandler(async (req, res, next) => {
-  const list_of_authors = await User.find().sort({ last: 1 }).select("username first last email admin").exec();
+  const list_of_authors = await User.find().sort({ last: 1 }).select("_id username first last").exec();
   return res.json(list_of_authors);
 });
 exports.update_user = [
@@ -75,14 +77,14 @@ exports.update_user = [
   }),
 ];
 exports.delete_user = asyncHandler(async (req, res, next) => {
-  if (req.body.userId == null || req.body.userId == "") {
+  if (req.body.authorId == null || req.body.authorId == "") {
     const err = new Error();
     err.status = 404;
     err.message = "User ID not provided!";
     return res.json(err);
   }
 
-  const user = await User.findById(req.params.id).exec();
+  const user = await User.findById(req.body.authorId).exec();
 
   if (user === null) {
     const err = new Error();
@@ -97,7 +99,12 @@ exports.delete_user = asyncHandler(async (req, res, next) => {
       .json({ message: "You are not authorized to delete this user." });
   }
 
-  await User.findByIdAndDelete(req.body.userId);
+  await Promise.all([
+    Post.deleteMany({author: req.body.authorId}),
+    Comment.deleteMany({author: req.body.authorId}),
+    User.findByIdAndDelete(req.body.authorId)
+  ]);
+
   return res.json({ message: "User was deleted successfully!" });
 });
 exports.get_user_detail = asyncHandler(async (req, res, next) => {
