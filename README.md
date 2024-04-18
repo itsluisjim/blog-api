@@ -5,6 +5,9 @@
 **Project Goal:**
 The goal of this project was to build a robust and secure REST API using Node.js, Express, and MongoDB. The API would follow best practices for RESTful design and include features such as JWT-based authentication and authorization.
 
+**BlogAway User Interface:** <a href="https://github.com/itsluisjim/blog-ui">View Repo</a>
+
+
 **Technologies Used:**
 
 - ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white): A JavaScript runtime environment that allows developers to run JavaScript on the server-side.
