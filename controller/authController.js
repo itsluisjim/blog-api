@@ -33,21 +33,23 @@ exports.login_user = [
       .exec();
 
     if (user == null) {
-      const err = new Error();
-      err.status = 404;
-      err.message = "Username does not exist.";
-
-      return res.json(err);
+      return res.status(404)
+        .json({
+          errors: [{ 
+            message:"Incorrect Username/Password" 
+          }]
+        });
     }
 
     const hashMatch = isValidPassword(password, user.hash, user.salt);
 
     if (!hashMatch) {
-      const err = new Error();
-      err.status = 401;
-      err.message = "Auth Failed: Incorrect Username/Password";
-
-      return res.json(err);
+      return res.status(401)
+        .json({
+          errors: [{ 
+            message:"Incorrect Username/Password" 
+          }]
+        });
     }
 
     const newUser = {
@@ -81,6 +83,7 @@ exports.signup_user = [
   body("username")
     .trim()
     .escape()
+    .toLowerCase()
     .isLength({ min: 8 })
     .withMessage("Username must be longer than 8 characters")
     .isAlphanumeric()
@@ -91,18 +94,18 @@ exports.signup_user = [
     .isLength({ min: 2 })
     .escape()
     .withMessage("First name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("First name has non-alphanumeric characters."),
+    .isAlpha()
+    .withMessage("First name must contain only alphabetical characters."),
 
   body("last")
     .trim()
     .isLength({ min: 2 })
     .escape()
     .withMessage("Last name must be longer than 2 characters.")
-    .isAlphanumeric()
-    .withMessage("Last name has non-alphanumeric characters."),
+    .isAlpha()
+    .withMessage("Last name must contain only alphabetical characters."),
 
-  body("email").trim().escape().isEmail(),
+  body("email").trim().escape().toLowerCase().isEmail(),
 
   body("password")
     .trim()
@@ -128,46 +131,77 @@ exports.signup_user = [
       }));
       return res.status(400).json({ errors: errorMessages });
     }
+    
+    const username = req.body.username;
+    const email = req.body.email
 
-    const saltHash = generatePassword(req.body.password);
+    const [ usernameTaken, emailTaken ] = await Promise.all([
+      User.exists({username}).exec(),
+      User.exists({email}).exec()
+    ]);
 
-    const salt = saltHash.salt;
-    const hash = saltHash.hash;
-
-    const user = new User({
-      username: req.body.username,
-      first: req.body.first,
-      last: req.body.last,
-      email: req.body.email,
-      hash: hash,
-      salt: salt,
-      admin: false,
-    });
-    await user.save();
-
-    const opts = {
-      expiresIn: 3600,
-    };
-
-    const cleanPayload = {
-      username: user.username,
-      email: user.email,
-      first: user.first,
-      last: user.last,
-      admin: user.admin,
-      _id: user._id,
-    };
-
-    const secret = process.env.SECRET;
-
-    const token = jwt.sign({ cleanPayload }, secret, opts);
-
-    return res.status(200).json({
-      message: "User creation successful!",
-      data: {
-        user: cleanPayload,
-        token,
-      },
-    });
+    if (usernameTaken && emailTaken) {
+      return res.status(409)
+        .json({
+          errors: [{ 
+            message: 'Username and Email are taken!'
+          }]
+        });
+    } else if (usernameTaken) {
+      return res.status(409)
+        .json({
+          errors: [{ 
+            message: 'Username is taken!'
+          }]
+        });
+    } else if (emailTaken) {
+      return res.status(409)
+        .json({
+          errors: [{ 
+            message: 'Email is taken!'
+          }]
+        });
+    } else {
+      const saltHash = generatePassword(req.body.password);
+  
+      const salt = saltHash.salt;
+      const hash = saltHash.hash;
+  
+      const user = new User({
+        username: req.body.username,
+        first: req.body.first,
+        last: req.body.last,
+        email: req.body.email,
+        hash: hash,
+        salt: salt,
+        admin: false,
+      });
+      await user.save();
+  
+      const opts = {
+        expiresIn: 3600,
+      };
+  
+      const cleanPayload = {
+        username: user.username,
+        email: user.email,
+        first: user.first,
+        last: user.last,
+        admin: user.admin,
+        _id: user._id,
+      };
+  
+      const secret = process.env.SECRET;
+  
+      const token = jwt.sign({ newUser: cleanPayload }, secret, opts);
+  
+      return res.status(200).json({
+        message: "User creation successful!",
+        data: {
+          user: cleanPayload,
+          token,
+        },
+      });
+    }
   })
 ];

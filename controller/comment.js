@@ -1,7 +1,7 @@
 const Comment = require("../models/comment");
 const asyncHandler = require("express-async-handler");
 const { body, validationResult } = require("express-validator");
-const comment = require("../models/comment");
+const Post = require("../models/post");
 
 exports.get_all_comments = asyncHandler(async (req, res, next) => {
   const comments = await Comment.find().exec();
@@ -23,13 +23,14 @@ exports.get_comment_detail = asyncHandler(async (req, res, next) => {
 });
 
 exports.create_comment = [
-  body("authorId").notEmpty(),
+  body("authorId").trim().notEmpty(),
+  body("postId").trim().notEmpty(),
 
   body("comment")
     .trim()
     .escape()
-    .isLength({ min: 1 })
-    .withMessage("Comment must have at least one character"),
+    .isLength({ min: 1, max: 200})
+    .withMessage("Comment must be between 1 to 200 characters long."),
 
   asyncHandler(async (req, res, next) => {
     const errors = validationResult(req);
@@ -41,6 +42,12 @@ exports.create_comment = [
       return res.status(400).json({ errors: errorMessages });
     }
 
+    const currentPost = await Post.findById(req.body.postId);
+
+    if (currentPost === null){
+      return res.status(404).json({errors: "The blog you are commenting under does not exist."})
+    }
+
     const comment = new Comment({
       author: req.body.authorId,
       createdAt: Date.now(),
@@ -49,6 +56,10 @@ exports.create_comment = [
     });
 
     await comment.save();
+
+    currentPost.comments.push(comment._id);
+
+    await currentPost.save();
 
     return res.json({message: "Comment created", comment: comment});
   }),
@@ -62,6 +73,10 @@ exports.delete_comment = asyncHandler(async (req, res, next) => {
     return res.json(err);
   }
 
+  if(req.body.postId === null) {
+    return res.status(403).json({message: "A post ID is required."});
+  }
+
   const comment = await Comment.findById(req.params.id).exec();
 
   if (
@@ -73,7 +88,13 @@ exports.delete_comment = asyncHandler(async (req, res, next) => {
       .json({ message: "You are not authorized to delete this comment." });
   }
 
-  await Comment.findByIdAndDelete(req.body.userId);
+  const post = await Post.findById(req.body.postId).exec();
+
+  post.comments = post.comments.filter((id) => id.toString() !== req.body.commentId.toString());
+
+  post.save();
+  
+  await Comment.findByIdAndDelete(req.body.commentId);
 
   return res.status(200).json({ message: "Comment deleted successfully!" });
 });

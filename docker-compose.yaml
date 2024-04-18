@@ -1,0 +1,10 @@
+version: '3'
+services:
+  db:
+    image: mongodb/atlas
+    environment:
+      DB_URL: process.env.DB_URL
+  app:
+    image: blog-api-container
+    ports:
+      - 13000:3000
