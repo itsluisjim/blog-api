@@ -42,10 +42,7 @@ exports.get_post_details = asyncHandler(async (req, res, next) => {
     .exec();
 
   if (post === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Post not found!";
-    return res.json(err);
+    return res.status(404).json({message: 'Post not found!'});
   }
   return res.json(post);
 });
@@ -97,19 +94,13 @@ exports.create_post = [
 ];
 exports.delete_post = asyncHandler(async (req, res, next) => {
   if (req.body.postId == null || req.body.postId == "") {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Post ID not provided!";
-    return res.json(err);
+    return res.status(400).json({message: "Post ID not provided!"});
   }
 
   const post = await Post.findById(req.params.id).exec();
 
   if (post === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Post not found!";
-    return res.json(err);
+    return res.status(404).json({message: "Post not found!"});
   } 
 
   if (post.author.toString() !== req.user._id.toString() && !req.user.admin) {

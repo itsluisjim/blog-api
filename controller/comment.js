@@ -13,10 +13,7 @@ exports.get_comment_detail = asyncHandler(async (req, res, next) => {
   const comment = await Comment.findById(req.params.id).exec();
 
   if (comment === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Comment not found!";
-    return res.json(err);
+    return res.status(404).json({message: "Comment not found!"});
   }
 
   return res.json(comment);
@@ -67,14 +64,11 @@ exports.create_comment = [
 
 exports.delete_comment = asyncHandler(async (req, res, next) => {
   if (req.body.commentId == null || req.body.commentId == "") {
-    const err = new Error();
-    err.status = 404;
-    err.message = "Comment ID not provided!";
-    return res.json(err);
+    return res.status(400).json({message: "Comment ID not provided!"});
   }
 
   if(req.body.postId === null) {
-    return res.status(403).json({message: "A post ID is required."});
+    return res.status(400).json({message: "A post ID is required."});
   }
 
   const comment = await Comment.findById(req.params.id).exec();
@@ -121,10 +115,7 @@ exports.update_comment = [
     const comment = await Comment.findById(req.params.id).exec();
 
     if (comment === null) {
-      const err = new Error();
-      err.status = 404;
-      err.message = "Comment not found!";
-      return res.json(err);
+      return res.status(404).json({message: "Comment not found!"});
     }
 
     const updatedComment = new Comment({

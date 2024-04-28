@@ -48,10 +48,7 @@ exports.update_user = [
     const user = await User.findById(req.params.id).exec();
 
     if (user == null) {
-      const err = new Error();
-      err.status = 404;
-      err.message = "User not found";
-      return res.json(err);
+      return res.status(404).json({message: "User not found!"});
     }
 
     const updatedUser = new User({
@@ -78,19 +75,13 @@ exports.update_user = [
 ];
 exports.delete_user = asyncHandler(async (req, res, next) => {
   if (req.body.authorId == null || req.body.authorId == "") {
-    const err = new Error();
-    err.status = 404;
-    err.message = "User ID not provided!";
-    return res.json(err);
+    return res.status(400).json({message: "User ID not provided!"});
   }
 
   const user = await User.findById(req.body.authorId).exec();
 
   if (user === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "User not found!";
-    return res.json(err);
+    return res.status(404).json({message: "User not found!"});
   }
 
   if (!req.user.admin) {
@@ -111,10 +102,7 @@ exports.get_user_detail = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id).select("username first last email admin").exec();
 
   if (user === null) {
-    const err = new Error();
-    err.status = 404;
-    err.message = "User not found!";
-    return res.json(err);
+    return res.status(404).json({message: "User not found!"});
   }
 
   return res.json(user);
