@@ -1,0 +1,537 @@
+openapi: 3.1.0
+info:
+  title: "BlogAway API"
+  version: "1.0.0"
+  description: "Documentation for BlogAway API"
+paths:
+  /posts:
+    get:
+      summary: Get a list of all posts
+      tags: [Posts]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example:
+                [{"_id":"66217029d33e41540d507c4d","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:10:33.359Z","title":"What is Spring Boot?","content":"Good question","isPublished":true,"comments":[],"__v":0},{"_id":"66216ffbd33e41540d507c44","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:09:47.085Z","title":"How to launch an EC2 instance on AWS to host your API","content":"This is how","isPublished":true,"comments":[],"__v":0},{"_id":"66216fd8d33e41540d507c3b","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:09:12.344Z","title":"How to create an API using Node JS and Express","content":"This is how to create it&#x2F;","isPublished":true,"comments":[],"__v":0}]
+  /posts/{authorId}/my-posts:
+    get:
+      summary: Get a list of all posts belonging to author
+      tags: [Posts]
+      parameters: 
+        - name: authorId
+          in: path
+          required: true
+          description: The ID of the Author whose post we want to return
+          schema:
+            type: string
+          example:
+            66216fb6d33e41540d507c36
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example:
+                [{"_id":"66217029d33e41540d507c4d","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:10:33.359Z","title":"What is Spring Boot?","content":"Good question","isPublished":true,"comments":[],"__v":0},{"_id":"66216ffbd33e41540d507c44","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:09:47.085Z","title":"How to launch an EC2 instance on AWS to host your API","content":"This is how","isPublished":true,"comments":[],"__v":0},{"_id":"66216fd8d33e41540d507c3b","author":{"_id":"66216fb6d33e41540d507c36","username":"donnaforman","first":"donna","last":"forman"},"createdAt":"2024-04-18T19:09:12.344Z","title":"How to create an API using Node JS and Express","content":"This is how to create it&#x2F;","isPublished":true,"comments":[],"__v":0}]
+  /posts/create:
+    post:
+      summary: Create a post
+      tags: [Posts]
+      requestBody:
+        description: This endpoint is used to create a post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSchema'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example:
+                {"message":"Post Created!","post":{"author":"65fe5f04c5559bfc4f90df8c","createdAt":"2024-04-28T01:42:11.001Z","title":"MY first post by an admin","content":"dfasfasdfasdfasdfasdfsdfdfasd","isPublished":true,"comments":[],"_id":"662da973dd522d64881f8379","__v":0}}
+        400:
+          description: Bad Request
+          content:
+            application/json:
+              example:
+                error:
+                  message: "Bad Request"
+  /posts/{postId}/update:
+    put:
+      summary: Update a post
+      tags: [Posts]
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID of the post
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to update a post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostSchema'
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {"message":"Post Updated!","post":{"author":"65fe5f04c5559bfc4f90df8c","createdAt":"2024-04-28T01:42:11.001Z","title":"MY first post by an admin","content":"dfasfasdfasdfasdfasdfsdfdfasd","isPublished":true,"comments":[],"_id":"662da973dd522d64881f8379","__v":0}}
+        403:
+          description: Unauthorized Response
+          content:
+            application/json:
+              example:
+                { message: "You are not authorized to update this post." }
+        404:
+          description: Unsuccessful Response
+          content:
+            application/json:
+              example:
+                { message: "Post not found!" }
+  /posts/{postId}:
+    get:
+      summary: Get a post by ID
+      tags: [Posts]
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID of the post
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {"author":"65fe5f04c5559bfc4f90df8c","createdAt":"2024-04-28T01:42:11.001Z","title":"MY first post by an admin","content":"dfasfasdfasdfasdfasdfsdfdfasd","isPublished":true,"comments":[],"_id":"662da973dd522d64881f8379","__v":0}
+        404:
+          description: Post not found Response
+          content:
+            application/json:
+              example:
+                { message: "Post not found!" }
+  /posts/{postId}/delete:
+    delete:
+      summary: Delete a post
+      tags: [Posts]
+      parameters:
+        - name: postId
+          in: path
+          required: true
+          description: ID of the post to be deleted
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to delete a post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePostSchema'
+      responses: 
+        200:
+            description: Succesful Response
+            content:
+              application/json:
+                example:
+                  { message: "Post was deleted successfully!" }
+        400:
+          description: Bad Request Response
+          content:
+            application/json:
+              example:
+                { message: "Post ID not provided!" }
+        403:
+          description: Unauthorized Response
+          content:
+            application/json:
+              example:
+                { message: "You are not authorized to delete this post." }
+        404:
+          description: Post not found Response
+          content:
+            application/json:
+              example:
+                { message: "Post not found!" }
+
+  /comments:
+    get:
+      summary: Get all comments
+      tags: [Comments]
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/json:
+              example:
+                [{_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }, {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }, {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }, {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }]
+  /comments/create:
+    post:
+      summary: Create a comment
+      tags: [Comments]
+      requestBody:
+        description: This endpoint is used to create a comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentSchema'
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                { message: "Comment created!", comment: {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }}
+        404:
+          description: Post not found Response
+          content:
+            application/json:
+              example:
+                { errors: "The blog you are commenting under does not exist." }
+        400:
+          description: Invalid input Response
+          content:
+            application/json:
+              example:
+                { errors: [{}] }
+  /comments/{commentId}:
+    get:
+      summary: Get a comment by ID
+      tags: [Comments]
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: ID of the comment to be retrieved
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }
+        404:
+          description: Comment not found Response
+          content:
+            application/json:
+              example:
+                { message: "Comment not found!"}
+    put:
+      summary: Update a comment
+      tags: [Comments]
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: ID of the comment to be updated
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to update a comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentSchema'
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {"message":"Your comment was updated!","comment": {_id: 662170082233e41540d507c4d, author: 66217029d33e41540d507c4d, createdAt: "2024-04-28T01:42:11.001Z", comment: "This is a comment.", post_id: 662da973dd522d64881f8379 }}
+        404:
+          description: Comment not found Response
+          content:
+            application/json:
+              example:
+                { message: "Comment not found!" }
+    delete:
+      summary: Delete a comment
+      tags: [Comments]
+      parameters:
+        - name: commentId
+          in: path
+          required: true
+          description: ID of the comment to be deleted
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to delete a comment
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCommentSchema'
+      responses: 
+        200:
+            description: Succesful Response
+            content:
+              application/json:
+                example:
+                  { message: "Comment was deleted successfully!" }
+        400:
+          description: Bad Request Response
+          content:
+            application/json:
+              example:
+                { message: "Post ID not provided!" }
+        403:
+          description: Unauthorized Response
+          content:
+            application/json:
+              example:
+                { message: "You are not authorized to delete this comment." }
+        404:
+          description: Post not found Response
+          content:
+            application/json:
+              example:
+                { message: "Post not found!" }
+
+  /authors:
+    get:
+      summary: Get a list of all authors (users)
+      tags: [Authors]
+      responses:
+        200:
+          description: Get all authors
+          content:
+            appplication/json:
+              example:
+                [{"username":"chuchobenitez11","first":"Chucho","last":"Benitez",_id":"65fe5f04c5559bfc4f90df8c"},{"username":"chuchobenitez11","first":"Chucho","last":"Benitez","_id":"65fe5f04c5559bfc4f90df8c"}, {"username":"chuchobenitez11","first":"Chucho","last":"Benitez","_id":"65fe5f04c5559bfc4f90df8c"},{"username":"chuchobenitez11","first":"Chucho","last":"Benitez","_id":"65fe5f04c5559bfc4f90df8c"}]
+  /authors/{authorId}:
+    get:
+      summary: Get an author by ID
+      tags: [Authors]
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID of the author to be retreived
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+  /authors/{authorId}/update:
+    put:
+      summary: Update an Author
+      tags: [Authors]
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID of the author to be updated
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to update an Author
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAuthorSchema'
+      responses:
+        200:
+          description: Successfull Response
+          content:
+            application/json:
+              example:
+                { message: "User updated!", user: {"first": "Angel", "last":"Smith", "email": "angel@gmail.com", "username": "angelsmith", "_id": "924879NF30489BD238H", "admin": true, "hash": ajnoriufnnliernfisenrfnlfiaunerfianerifna, "salt": "jlaeiruofnalienrfaienrfainnalferifn"}}
+        403:
+          description: Unauthorized Response
+          content:
+            appplication/json:
+              example:
+                {message: "You are not authorized to update this user"}
+        404:
+          description: Author (user) not found Response
+          content:
+            application/json:
+              example:
+                { message: "User not found!" }
+  /authors/{authorId}/delete:
+    delete:
+      summary: Delete an author by ID
+      tags: [Authors]
+      parameters:
+        - name: authorId
+          in: path
+          required: true
+          description: ID of the author to be deleted
+          schema:
+            type: string
+            example:
+              66217029d33e41540d507c4d
+      requestBody:
+        description: This endpoint is used to delete an Author (user)
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteAuthorSchema'
+
+  /auth/signup:
+    post:
+      summary: Sign up.
+      tags: [Authentication]
+      requestBody:
+        description: This endpoint is used to signup
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpSchema'
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {"message":"User creation successful","data":{"user":{"username":"chuchobenitez11","email":"cbenitez@gmail.com","first":"Chucho","last":"Benitez","admin":true,"_id":"65fe5f04c5559bfc4f90df8c"},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuZXdVc2VyIjp7InVzZXJuYW1lIjoiY2h1Y2hvYmVuaXRlejExIiwiZW1haWwiOiJjYmVuaXRlekBnbWFpbC5jb20iLCJmaXJzdCI6IkNodWNobyIsImxhc3QiOiJCZW5pdGV6IiwiYWRtaW4iOnRydWUsIl9pZCI6IjY1ZmU1ZjA0YzU1NTliZmM0ZjkwZGY4YyJ9LCJpYXQiOjE3MTQyNzczNDYsImV4cCI6MTcxNDI4MDk0Nn0.2vKn21Uf5PtWJQeC5y8J6pzjBdrKo-ppxU9s1qGxi3Y"}}
+  /auth/login:
+    post:
+      summary: Login to account
+      tags: [Authentication]
+      requestBody:
+        description: This endpoint is used to login
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginSchema'
+      responses:
+        200:
+          description: Succesful Response
+          content:
+            application/json:
+              example:
+                {"message":"Authentication Successfull","data":{"user":{"username":"chuchobenitez11","email":"cbenitez@gmail.com","first":"Chucho","last":"Benitez","admin":true,"_id":"65fe5f04c5559bfc4f90df8c"},"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuZXdVc2VyIjp7InVzZXJuYW1lIjoiY2h1Y2hvYmVuaXRlejExIiwiZW1haWwiOiJjYmVuaXRlekBnbWFpbC5jb20iLCJmaXJzdCI6IkNodWNobyIsImxhc3QiOiJCZW5pdGV6IiwiYWRtaW4iOnRydWUsIl9pZCI6IjY1ZmU1ZjA0YzU1NTliZmM0ZjkwZGY4YyJ9LCJpYXQiOjE3MTQyNzczNDYsImV4cCI6MTcxNDI4MDk0Nn0.2vKn21Uf5PtWJQeC5y8J6pzjBdrKo-ppxU9s1qGxi3Y"}}
+
+components:
+  schemas:
+    PostSchema:
+      type: object
+      properties:
+        authorId:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+        published:
+          type: boolean
+      required:
+        - authorId
+        - title
+        - content
+        - published
+    CommentSchema:
+      type: object
+      properties:
+        authorId:
+          type: string
+        comment:
+          type: string
+          minLength: 1
+          maxLength: 200
+        postId:
+          type: string
+      required:
+        - authorId
+        - comment
+        - postId
+    DeletePostSchema:
+      type: object
+      properties:
+        postId:
+          type: string
+      required:
+        - postId
+    DeleteCommentSchema:
+      type: object
+      properties:
+        postId:
+          type: string
+        commentId:
+          type: string
+      required:
+        - postId
+        - commentId
+    SignUpSchema:
+      type: object
+      properties:
+        username:
+          type: string
+        first:
+          type: string
+        last:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - first
+        - last
+        - email
+        - password
+    LoginSchema:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      required:
+        - username
+        - password
+    UpdateAuthorSchema:
+      type: object
+      properties:
+        username:
+          type: string
+        first:
+          type: string
+        last:
+          type: string
+      required:
+        - username
+        - first
+        - last
+    DeleteAuthorSchema:
+      type: object
+      properties:
+        authorId:
+          type: string
+      required:
+        - authorId
