@@ -3,7 +3,7 @@
 ## Blogaway - A blogging platform
 
 **Project Goal:**
-The goal of this project was to build a robust and secure REST API using Node.js, Express, and MongoDB. The API would follow best practices for RESTful design and include features such as JWT-based authentication and authorization.
+The goal of this project was to build a robust and secure REST API using Node.js, Express, and MongoDB. The API would follow best practices for RESTful design and include features such as JWT-based authentication and authorization. Used Swagger to document API endpoints.
 
 **BlogAway User Interface:** <a href="https://github.com/itsluisjim/blog-ui">View Repo</a>
 
@@ -39,4 +39,5 @@ The project is structured in a modular and maintainable way, with the following 
 - **Utilities**: Includes helper functions, configuration settings, and other supporting code.
 
 ### Future Work:
-- Allow users to upload thier own profile images.
+- Allow users to upload their own profile images.
+- Allow users to change their email.
