@@ -38,6 +38,8 @@ The project is structured in a modular and maintainable way, with the following 
 - **Middleware**: Handles cross-cutting concerns, such as authentication, authorization, and error handling.
 - **Utilities**: Includes helper functions, configuration settings, and other supporting code.
 
+![Screenshot 2024-04-28 at 7 58 37 PM](https://github.com/itsluisjim/blog-api/assets/105807191/7f1eace7-cc9f-4abc-9d84-43277cbf8675)
+
 ### Future Work:
 - Allow users to upload their own profile images.
 - Allow users to change their email.
