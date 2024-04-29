@@ -238,6 +238,7 @@ paths:
             application/json:
               example:
                 { message: "Comment not found!"}
+  /comments/{commentId}/delete:
     put:
       summary: Update a comment
       tags: [Comments]
