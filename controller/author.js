@@ -78,7 +78,7 @@ exports.delete_user = asyncHandler(async (req, res, next) => {
     return res.status(400).json({message: "User ID not provided!"});
   }
 
-  const user = await User.findById(req.body.authorId).exec();
+  const user = await User.findById(req.params.authorId).exec();
 
   if (user === null) {
     return res.status(404).json({message: "User not found!"});
